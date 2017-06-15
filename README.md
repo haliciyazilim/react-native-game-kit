@@ -1,7 +1,7 @@
-<h1 align="center">react-game-kit</h1>
+<h1 align="center">react-native-game-kit</h1>
 
 <h4 align="center">
-  Make games with React & React Native!
+  Make games with React Native!
 </h4>
 
 ***
@@ -14,16 +14,16 @@
 
 ## Install
 
-`npm install react-game-kit --save`
+`yarn add react-native-game-kit --save`
 
 ## Get Started
 
-`react-game-kit` provides a set of helper components to make it easier to create games with React and React Native.
+`react-native-game-kit` provides a set of helper components to make it easier to create games with React Native.
 
 You'll want to begin by importing the components you need:
 
 ```js
-import { Loop, Stage } from 'react-game-kit';
+import { Loop, Stage } from 'react-native-game-kit';
 ```
 
 ### Loop & Stage
@@ -93,7 +93,7 @@ Once this general structure is established, what follows usually depends on what
 Using this library with React Native is a simple as importing from the native directory:
 
 ```js
-import { Loop, Stage, ...etc } from 'react-game-kit/native'; 
+import { Loop, Stage, ...etc } from 'react-game-kit/native';
 ```
 
 > Note: AudioPlayer and KeyListener are not implemented on the React Native version.
@@ -111,15 +111,15 @@ class ChildComponent extends React.Component {
   static contextTypes = {
     loop: PropTypes.object,
   };
-	
+
   update = () => {
     // tick logic
   };
-	
+
   componentDidMount() {
     this.context.loop.subscribe(this.update);
   }
-	
+
   componentWillUnmount() {
     this.context.loop.unsubscribe(this.update);
   }
@@ -135,7 +135,7 @@ class ChildComponent extends React.Component {
 
 **width** (_number_) : Base game width. Defaults to `1024`.
 
-The `Stage` component also leverages `context` much like `Loop`, except it passes game scale as `this.context.scale`. You can use this value to appropriately scale positioning and dimension values within your game. Again, you would have to specify `scale: PropTypes.number` in your component's `contextTypes` to receive this value. 
+The `Stage` component also leverages `context` much like `Loop`, except it passes game scale as `this.context.scale`. You can use this value to appropriately scale positioning and dimension values within your game. Again, you would have to specify `scale: PropTypes.number` in your component's `contextTypes` to receive this value.
 
 --
 

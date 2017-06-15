@@ -1,15 +1,17 @@
 import React, { Component, PropTypes } from 'react';
 
+import { View, Image } from 'react-native';
 
 export default class TileMap extends Component {
 
   static propTypes = {
     columns: PropTypes.number,
     layers: PropTypes.array,
+    sourceWidth: PropTypes.number.isRequired,
     renderTile: PropTypes.func,
     rows: PropTypes.number,
     scale: PropTypes.number,
-    src: PropTypes.string,
+    src: PropTypes.number,
     style: PropTypes.object,
     tileSize: PropTypes.number,
   };
@@ -18,9 +20,10 @@ export default class TileMap extends Component {
     columns: 16,
     layers: [],
     renderTile: (tile, src, styles) => (
-      <img
+      <Image
+        resizeMode="stretch"
         style={styles}
-        src={src}
+        source={src}
       />
     ),
     rows: 9,
@@ -48,7 +51,7 @@ export default class TileMap extends Component {
           const gridIndex = (r * columns) + c;
           if (l[gridIndex] !== 0) {
             layer.push(
-              <div
+              <View
                 key={`tile-${index}-${r}-${c}`}
                 style={this.getImageWrapperStyles(r, c)}
               >
@@ -57,7 +60,7 @@ export default class TileMap extends Component {
                   this.props.src,
                   this.getImageStyles(l[gridIndex]),
                 )}
-              </div>
+              </View>
             );
           }
         }
@@ -85,17 +88,17 @@ export default class TileMap extends Component {
 
   getImageStyles(imageIndex) {
     const { scale } = this.context;
-    const { tileSize } = this.props;
+    const { tileSize, sourceWidth } = this.props;
 
-    const size = Math.round(scale * tileSize);
+    const size = scale * tileSize;
     const left = (imageIndex - 1) * size;
 
     return {
       position: 'absolute',
-      imageRendering: 'pixelated',
-      display: 'block',
-      height: '100%',
-      transform: `translate(-${left}px, 0px)`,
+      height: size,
+      width: sourceWidth * scale,
+      top: 0,
+      left: left * -1,
     };
   }
 
@@ -103,7 +106,7 @@ export default class TileMap extends Component {
     const { scale } = this.context;
     const { tileSize } = this.props;
 
-    const size = Math.round(scale * tileSize);
+    const size = scale * tileSize;
     const left = column * size;
     const top = row * size;
 
@@ -112,7 +115,8 @@ export default class TileMap extends Component {
       width: size,
       overflow: 'hidden',
       position: 'absolute',
-      transform: `translate(${left}px, ${top}px)`,
+      top,
+      left: left,
     };
   }
 
@@ -135,15 +139,15 @@ export default class TileMap extends Component {
   render() {
     const layers = this.generateMap();
     return (
-      <div style={{ ...this.getWrapperStyles(), ...this.props.style }}>
+      <View style={{ ...this.getWrapperStyles(), ...this.props.style }}>
         { layers.map((layer, index) => {
           return (
-            <div key={`layer-${index}`} style={this.getLayerStyles()}>
+            <View key={`layer-${index}`} style={this.getLayerStyles()}>
               {layer}
-            </div>
+            </View>
           );
         })}
-      </div>
+      </View>
     );
   }
 

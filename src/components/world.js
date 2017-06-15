@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
+import { View } from 'react-native';
+
 import Matter, { Engine, Events } from 'matter-js';
 
 export default class World extends Component {
@@ -84,17 +86,13 @@ export default class World extends Component {
 
   render() {
     const defaultStyles = {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      height: '100%',
-      width: '100%',
+      flex: 1,
     };
 
     return (
-      <div style={defaultStyles}>
+      <View style={defaultStyles}>
         {this.props.children}
-      </div>
+      </View>
     );
   }
 

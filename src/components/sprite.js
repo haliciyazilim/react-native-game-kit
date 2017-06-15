@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
+import { View, Image } from 'react-native';
+
 export default class Sprite extends Component {
 
   static propTypes = {
@@ -7,7 +9,7 @@ export default class Sprite extends Component {
     onPlayStateChanged: PropTypes.func,
     repeat: PropTypes.bool,
     scale: PropTypes.number,
-    src: PropTypes.string,
+    src: PropTypes.number,
     state: PropTypes.number,
     steps: PropTypes.array,
     style: PropTypes.object,
@@ -106,30 +108,32 @@ export default class Sprite extends Component {
 
     return {
       position: 'absolute',
-      transform: `translate(-${left}px, -${top}px)`,
+      transform: [
+        { translateX: left * -1 },
+        { translateY: top * -1 }
+      ]
     };
   }
 
   getWrapperStyles() {
+    const scale = this.props.scale || this.context.scale;
     return {
       height: this.props.tileHeight,
       width: this.props.tileWidth,
       overflow: 'hidden',
       position: 'relative',
-      transform: `scale(${this.props.scale || this.context.scale})`,
-      transformOrigin: 'top left',
-      imageRendering: 'pixelated',
+      transform: [{scale: scale}]
     };
   }
 
   render() {
     return (
-      <div style={{ ...this.getWrapperStyles(), ...this.props.style }}>
-        <img
+      <View style={{ ...this.getWrapperStyles(), ...this.props.style }}>
+        <Image
           style={this.getImageStyles()}
-          src={this.props.src}
+          source={this.props.src}
         />
-      </div>
+      </View>
     );
   }
 

@@ -1,5 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 
+import {
+  View,
+} from 'react-native';
+
 import GameLoop from '../utils/game-loop';
 
 export default class Loop extends Component {
@@ -35,14 +39,13 @@ export default class Loop extends Component {
 
   render() {
     const defaultStyles = {
-      height: '100%',
-      width: '100%',
+      flex: 1
     };
     const styles = { ...defaultStyles, ...this.props.style };
     return (
-      <div style={styles}>
+      <View style={styles}>
         {this.props.children}
-      </div>
+      </View>
     );
   }
 

@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
+import { View, Dimensions } from 'react-native';
+
 export default class Stage extends Component {
 
   static propTypes = {
@@ -23,32 +25,14 @@ export default class Stage extends Component {
     scale: PropTypes.number,
   };
 
-  setDimensions = () => {
-    this.setState({
-      dimensions: [
-        this.container.offsetWidth,
-        this.container.offsetHeight,
-      ],
-    });
-  }
-
   constructor(props) {
     super(props);
 
-    this.container = null;
+    const { height, width } = Dimensions.get('window');
 
     this.state = {
-      dimensions: [0, 0],
+      dimensions: [height, width ],
     };
-  }
-
-  componentDidMount() {
-    window.addEventListener('resize', this.setDimensions);
-    this.setDimensions();
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.setDimensions);
   }
 
   getChildContext() {
@@ -59,7 +43,7 @@ export default class Stage extends Component {
   }
 
   getScale() {
-    const [vwidth, vheight] = this.state.dimensions;
+    const [vheight, vwidth] = this.state.dimensions;
     const { height, width } = this.props;
 
     let targetWidth;
@@ -76,50 +60,41 @@ export default class Stage extends Component {
       targetScale = vwidth / width;
     }
 
-    if (!this.container) {
-      return {
-        height,
-        width,
-        scale: 1,
-      };
-    } else {
-      return {
-        height: targetHeight,
-        width: targetWidth,
-        scale: targetScale,
-      };
-    }
+    return {
+      height: targetHeight,
+      width: targetWidth,
+      scale: targetScale,
+    };
   }
 
   getWrapperStyles() {
     return {
-      height: '100%',
-      width: '100%',
-      position: 'relative',
+      flex: 1
     };
   }
 
   getInnerStyles() {
     const scale = this.getScale();
-    const xOffset = Math.floor((this.state.dimensions[0] - scale.width) / 2);
-    const yOffset = Math.floor((this.state.dimensions[1] - scale.height) / 2);
+    const xOffset = Math.floor((this.state.dimensions[1] - scale.width) / 2);
+    const yOffset = Math.floor((this.state.dimensions[0] - scale.height) / 2);
 
     return {
       height: Math.floor(scale.height),
       width: Math.floor(scale.width),
       position: 'absolute',
       overflow: 'hidden',
-      transform: `translate(${xOffset}px, ${yOffset}px)`,
+      left: xOffset,
+      top: yOffset,
     };
   }
 
   render() {
     return (
-      <div style={this.getWrapperStyles()} ref={(c) => { this.container = c; }}>
-        <div style={{ ...this.getInnerStyles(), ...this.props.style }}>
+      <View style={this.getWrapperStyles()}>
+        <View style={{ ...this.getInnerStyles(), ...this.props.style }}>
           {this.props.children}
-        </div>
-      </div>
+        </View>
+      </View>
     );
   }
 
