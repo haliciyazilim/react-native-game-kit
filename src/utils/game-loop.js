@@ -1,7 +1,7 @@
 export default class GameLoop {
   loop = () => {
     this.subscribers.forEach((callback) => {
-      callback.call();
+      callback && callback.call();
     });
 
     this.loopID = window.requestAnimationFrame(this.loop);
@@ -25,6 +25,6 @@ export default class GameLoop {
     return this.subscribers.push(callback);
   }
   unsubscribe(id) {
-    this.subscribers.splice((id - 1), 1);
+    delete this.subscribers[id - 1];
   }
 }
