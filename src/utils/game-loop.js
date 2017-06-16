@@ -16,7 +16,7 @@ export default class GameLoop {
     }
   }
   stop() {
-    if (!this.loopID) {
+    if (this.loopID) {
       window.cancelAnimationFrame(this.loopID);
       this.loopID = null;
     }
