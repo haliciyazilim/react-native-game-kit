@@ -16,6 +16,7 @@ export default class Sprite extends Component {
     ticksPerFrame: PropTypes.number,
     tileHeight: PropTypes.number,
     tileWidth: PropTypes.number,
+    startStep: PropTypes.number,
   };
 
   static defaultProps = {
@@ -28,6 +29,7 @@ export default class Sprite extends Component {
     ticksPerFrame: 4,
     tileHeight: 64,
     tileWidth: 64,
+    startStep: 0,
   };
 
   static contextTypes = {
@@ -43,7 +45,7 @@ export default class Sprite extends Component {
     this.finished = false;
 
     this.state = {
-      currentStep: 0,
+      currentStep: props.startStep,
     };
   }
 
@@ -61,7 +63,7 @@ export default class Sprite extends Component {
       this.tickCount = 0;
 
       this.setState({
-        currentStep: 0,
+        currentStep: nextProps.startStep,
       }, () => {
         const animate = this.animate.bind(this, nextProps);
         this.loopID = this.context.loop.subscribe(animate);
