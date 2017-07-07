@@ -1,4 +1,7 @@
+type Callback = (tick: number) => mixed;
+
 export default class GameLoop {
+  subscribers: Array<Callback>;
   loopID: number;
 
   constructor() {
@@ -9,12 +12,12 @@ export default class GameLoop {
   }
 
   loop() {
-    const time = Date.now();
+    const tick = Date.now();
     this.subscribers.forEach((callback) => {
-      callback && callback(time);
+      callback && callback(tick);
     });
 
-    this.loopID = window.requestAnimationFrame(this.loop);
+    this.loopID = requestAnimationFrame(this.loop);
   }
 
   start() {
@@ -25,16 +28,16 @@ export default class GameLoop {
 
   stop() {
     if (this.loopID) {
-      window.cancelAnimationFrame(this.loopID);
+      cancelAnimationFrame(this.loopID);
       this.loopID = null;
     }
   }
 
-  subscribe(callback) {
+  subscribe(callback: Callback): number {
     return this.subscribers.push(callback);
   }
 
-  unsubscribe(id) {
+  unsubscribe(id: number) {
     delete this.subscribers[id - 1];
   }
 }
