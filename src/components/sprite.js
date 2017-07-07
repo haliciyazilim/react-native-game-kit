@@ -13,7 +13,7 @@ export default class Sprite extends Component {
     state: PropTypes.number,
     steps: PropTypes.array,
     style: PropTypes.object,
-    ticksPerFrame: PropTypes.number,
+    duration: PropTypes.number,
     tileHeight: PropTypes.number,
     tileWidth: PropTypes.number,
     startStep: PropTypes.number,
@@ -26,7 +26,7 @@ export default class Sprite extends Component {
     src: '',
     state: 0,
     steps: [],
-    ticksPerFrame: 4,
+    duration: 4,
     tileHeight: 64,
     tileWidth: 64,
     startStep: 0,
@@ -41,8 +41,9 @@ export default class Sprite extends Component {
     super(props);
 
     this.loopID = null;
-    this.tickCount = 0;
     this.finished = false;
+    this.lastTime = null;
+    this.stepDuration = props.duration / props.steps[props.state];
 
     this.state = {
       currentStep: props.startStep,
@@ -58,9 +59,10 @@ export default class Sprite extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.state !== this.props.state) {
       this.finished = false;
-      this.props.onPlayStateChanged(1);
+      this.nextProps.onPlayStateChanged(1);
       this.context.loop.unsubscribe(this.loopID);
-      this.tickCount = 0;
+      this.lastTime = null;
+      this.stepDuration = nextProps.duration / nextProps.steps[nextProps.state];
 
       this.setState({
         currentStep: nextProps.startStep,
@@ -75,30 +77,32 @@ export default class Sprite extends Component {
     this.context.loop.unsubscribe(this.loopID);
   }
 
-  animate(props) {
-    const { repeat, ticksPerFrame, state, steps } = props;
+  animate(props, time) {
+    const { repeat, duration, state, steps } = props;
 
-    if (this.tickCount === ticksPerFrame && !this.finished) {
-      if (steps[state] !== 0) {
-        const { currentStep } = this.state;
-        const lastStep = steps[state];
-        const nextStep = currentStep === lastStep ? 0 : currentStep + 1;
-
-        this.setState({
-          currentStep: nextStep,
-        });
-
-        if (currentStep === lastStep && repeat === false) {
-          this.finished = true;
-          this.props.onPlayStateChanged(0);
-        }
-      }
-
-      this.tickCount = 0;
-    } else {
-      this.tickCount++;
+    if (!this.lastTime) {
+      this.lastTime = time;
     }
 
+    const stepCount = steps[state];
+    if (stepCount === 0 || this.finished) {
+      return;
+    }
+
+    const deltaTime = time - this.lastTime;
+    const step = Math.floor(deltaTime / this.stepDuration);
+    const nextStep = step % stepCount;
+    const { currentStep } = this.state;
+    if (currentStep !== nextStep) {
+      this.setState({
+        currentStep: nextStep,
+      });
+
+      if (step >= (stepCount - 1) && repeat === false) {
+        this.finished = true;
+        this.props.onPlayStateChanged(0);
+      }
+    }
   }
 
   getImageStyles() {
