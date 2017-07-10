@@ -14,7 +14,7 @@ export default class Sprite extends Component {
     frameCounts: PropTypes.array,
     startFrame: PropTypes.number,
     frameDuration: PropTypes.number,
-    style: PropTypes.object,
+    style: View.propTypes.style,
     tileHeight: PropTypes.number,
     tileWidth: PropTypes.number,
   };
