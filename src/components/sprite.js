@@ -17,6 +17,7 @@ export default class Sprite extends Component {
     style: View.propTypes.style,
     tileHeight: PropTypes.number,
     tileWidth: PropTypes.number,
+    restart: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -30,6 +31,7 @@ export default class Sprite extends Component {
     frameDuration: 125,
     tileHeight: 64,
     tileWidth: 64,
+    restart: false,
   };
 
   static contextTypes = {
@@ -56,7 +58,9 @@ export default class Sprite extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.state !== this.props.state) {
+    if (nextProps.state !== this.props.state
+        || nextProps.src !== this.props.src
+        || nextProps.restart !== this.props.restart) {
       this.finished = false;
       this.props.onPlayStateChanged(1);
       this.context.loop.unsubscribe(this.loopID);
@@ -89,17 +93,18 @@ export default class Sprite extends Component {
 
     const deltaTime = tick - this.lastTick;
     const frame = Math.floor(deltaTime / frameDuration);
-    const nextFrame = frame % frameCount;
-    const { currentFrame } = this.state;
-    if (currentFrame !== nextFrame) {
+    let nextFrame;
+    if (frame >= frameCount && repeat === false) {
+      nextFrame = frameCount - 1;
+      this.finished = true;
+      this.props.onPlayStateChanged(0);
+    } else {
+      nextFrame = frame % frameCount;
+    }
+    if (this.state.currentFrame !== nextFrame) {
       this.setState({
         currentFrame: nextFrame,
       });
-
-      if (frame >= (frameCount - 1) && repeat === false) {
-        this.finished = true;
-        this.props.onPlayStateChanged(0);
-      }
     }
   }
 
@@ -126,7 +131,7 @@ export default class Sprite extends Component {
       {
         width: tileWidth,
         height: tileHeight,
-        transform: [{scale: scale}]
+        transform: [{scale: scale}],
       }
     ];
     const left = offset[0] + (currentFrame * tileWidth);
