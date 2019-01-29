@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import { StyleSheet, View, Image } from 'react-native';
 
@@ -14,7 +15,7 @@ export default class Sprite extends Component {
     frameCounts: PropTypes.array,
     startFrame: PropTypes.number,
     frameDuration: PropTypes.number,
-    style: View.propTypes.style,
+    style: PropTypes.any,
     tileHeight: PropTypes.number,
     tileWidth: PropTypes.number,
     restart: PropTypes.bool,
@@ -151,6 +152,8 @@ export default class Sprite extends Component {
           <Image
             style={imageStyles}
             source={this.props.src}
+            resizeMethod="resize"
+            resizeMode="contain"
           />
         </View>
       </View>
@@ -168,6 +171,6 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   image: {
-    position: 'absolute',
+    position: 'absolute'
   },
 });
